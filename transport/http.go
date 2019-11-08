@@ -33,8 +33,8 @@ func NewHTTPHandler(endpoints endpoint.Set, logger kitlog.Logger) http.Handler {
 		options...,
 	)
 	r := mux.NewRouter()
-	r.Handle("/single", singleHandler).Methods(http.MethodPost)
-	r.Handle("/health", healthCheckHandler).Methods(http.MethodGet)
+	r.Handle("/fizzbuzz/v1/single", singleHandler).Methods(http.MethodPost)
+	r.Handle("/fizzbuzz/health", healthCheckHandler).Methods(http.MethodGet)
 
 	return r
 }

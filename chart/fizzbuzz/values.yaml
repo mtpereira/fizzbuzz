@@ -43,7 +43,7 @@ ingress:
   hosts:
     - host: minikube.local
       paths:
-        - /
+        - /fizzbuzz
 
   tls: []
   #  - secretName: chart-example-tls
