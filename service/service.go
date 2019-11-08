@@ -8,6 +8,7 @@ import (
 // Service implements the business logic.
 type Service interface {
 	Single(number int) (string, error)
+	HealthCheck() bool
 }
 
 type service struct{}
@@ -35,3 +36,5 @@ func (s *service) Single(number int) (string, error) {
 
 	return res, nil
 }
+
+func (s *service) HealthCheck() bool { return true }

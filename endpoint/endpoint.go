@@ -9,13 +9,15 @@ import (
 
 // Set is an helper struct to share all the service's endpoints.
 type Set struct {
-	Single endpoint.Endpoint
+	Single      endpoint.Endpoint
+	HealthCheck endpoint.Endpoint
 }
 
 // New returns an Endpoints struct with all the svc's endpoints.
 func New(svc s.Service) *Set {
 	return &Set{
-		Single: makeSingleEndpoint(svc),
+		Single:      makeSingleEndpoint(svc),
+		HealthCheck: makeHealthCheckEndpoint(svc),
 	}
 }
 
@@ -38,5 +40,20 @@ func makeSingleEndpoint(svc s.Service) endpoint.Endpoint {
 			return SingleResponse{s, err.Error()}, err
 		}
 		return SingleResponse{s, ""}, nil
+	}
+}
+
+// HealthCheckRequest represents a request to the HealthCheck endpoint.
+type HealthCheckRequest struct{}
+
+// HealthCheckResponse represents a response from the HealthCheck endpoint.
+type HealthCheckResponse struct {
+	Status bool `json:"status"`
+}
+
+func makeHealthCheckEndpoint(svc s.Service) endpoint.Endpoint {
+	return func(_ context.Context, request interface{}) (interface{}, error) {
+		s := svc.HealthCheck()
+		return HealthCheckResponse{s}, nil
 	}
 }

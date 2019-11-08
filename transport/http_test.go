@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"github.com/go-kit/kit/log"
 )
 
 func Test_NewHTTPHandler(t *testing.T) {
@@ -31,10 +32,17 @@ func Test_NewHTTPHandler(t *testing.T) {
 			body:         http.NoBody,
 			responseCode: http.StatusMethodNotAllowed,
 		},
+		"responds to GET on /health": {
+			endpoints:    endpoint.New(service.New()),
+			path:         "/health",
+			method:       http.MethodGet,
+			body:         http.NoBody,
+			responseCode: http.StatusOK,
+		},
 	}
 	for name, tt := range tests {
 		t.Run(name, func(t *testing.T) {
-			h := NewHTTPHandler(*tt.endpoints)
+			h := NewHTTPHandler(*tt.endpoints, log.NewNopLogger())
 			req, err := http.NewRequest(tt.method, tt.path, tt.body)
 			if err != nil {
 				t.Fatal(err)

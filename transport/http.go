@@ -26,8 +26,15 @@ func NewHTTPHandler(endpoints endpoint.Set, logger kitlog.Logger) http.Handler {
 		options...,
 	)
 
+	healthCheckHandler := kithttp.NewServer(
+		endpoints.HealthCheck,
+		decodeHealthCheckRequest,
+		encodeResponse,
+		options...,
+	)
 	r := mux.NewRouter()
 	r.Handle("/single", singleHandler).Methods(http.MethodPost)
+	r.Handle("/health", healthCheckHandler).Methods(http.MethodGet)
 
 	return r
 }
@@ -37,6 +44,10 @@ func decodeSingleRequest(_ context.Context, r *http.Request) (interface{}, error
 	dec := json.NewDecoder(r.Body)
 	err := dec.Decode(&req)
 	return req, err
+}
+
+func decodeHealthCheckRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	return endpoint.HealthCheckRequest{}, nil
 }
 
 func encodeResponse(_ context.Context, w http.ResponseWriter, response interface{}) error {
