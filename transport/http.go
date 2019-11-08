@@ -8,15 +8,22 @@ import (
 
 	"github.com/gorilla/mux"
 
+	kitlog "github.com/go-kit/kit/log"
+	kittransport "github.com/go-kit/kit/transport"
 	kithttp "github.com/go-kit/kit/transport/http"
 )
 
 // NewHTTPHandler builds and returns an HTTP handler with all the routing configured.
-func NewHTTPHandler(endpoints endpoint.Set) http.Handler {
+func NewHTTPHandler(endpoints endpoint.Set, logger kitlog.Logger) http.Handler {
+	options := []kithttp.ServerOption{
+		kithttp.ServerErrorHandler(kittransport.NewLogErrorHandler(logger)),
+	}
+
 	singleHandler := kithttp.NewServer(
 		endpoints.Single,
 		decodeSingleRequest,
 		encodeResponse,
+		options...,
 	)
 
 	r := mux.NewRouter()
